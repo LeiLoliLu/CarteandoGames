@@ -156,17 +156,14 @@ button#checkOrder:hover {
   cursor: pointer;
 }
 
-/* Mobile tweaks */
 @media (max-width: 480px) {
-  h1 {
-    font-size: 1.5rem;
+    .image-container {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+    }
+  
+    .image-item {
+      cursor: grab;
+    }
   }
-
-  .container {
-    padding: 20px 15px;
-  }
-
-  button#checkOrder {
-    font-size: 0.95rem;
-  }
-}
+  

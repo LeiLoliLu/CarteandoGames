@@ -37,7 +37,7 @@ const images = [
   
   renderImages();
   
-  // Drag and Drop funcionalidad simple
+  // Drag & Drop para mouse
   let dragged;
   
   document.addEventListener('dragstart', e => {
@@ -70,6 +70,75 @@ const images = [
     }
   });
   
+  // Drag & Drop para touch (móvil)
+  let touchDragged = null;
+  let movedDuringPress = false;
+  let pressTimer = null;
+  
+  imageContainer.addEventListener('touchstart', e => {
+    const touch = e.touches[0];
+    const target = e.target.closest('.image-item');
+    if (!target) return;
+  
+    touchDragged = target;
+    movedDuringPress = false;
+  
+    pressTimer = setTimeout(() => {
+      if (!movedDuringPress && touchDragged) {
+        openZoom(touchDragged.querySelector('img'));
+        touchDragged = null;
+      }
+    }, 500);
+  });
+  
+  imageContainer.addEventListener('touchmove', e => {
+    if (!touchDragged) return;
+  
+    movedDuringPress = true;
+  
+    const touch = e.touches[0];
+    const currentX = touch.clientX;
+    const currentY = touch.clientY;
+  
+    const container = touchDragged.parentNode;
+    const children = [...container.children];
+  
+    for (let child of children) {
+      if (child === touchDragged) continue;
+  
+      const rect = child.getBoundingClientRect();
+  
+      if (
+        currentX > rect.left &&
+        currentX < rect.right &&
+        currentY > rect.top &&
+        currentY < rect.bottom
+      ) {
+        const draggedIndex = children.indexOf(touchDragged);
+        const targetIndex = children.indexOf(child);
+  
+        if (draggedIndex < targetIndex) {
+          container.insertBefore(touchDragged, child.nextSibling);
+        } else {
+          container.insertBefore(touchDragged, child);
+        }
+        break;
+      }
+    }
+  });
+  
+  imageContainer.addEventListener('touchend', e => {
+    touchDragged = null;
+    clearTimeout(pressTimer);
+    pressTimer = null;
+  });
+  
+  imageContainer.addEventListener('touchcancel', e => {
+    touchDragged = null;
+    clearTimeout(pressTimer);
+    pressTimer = null;
+  });
+  
   // Botón para comprobar orden (solo muestra mensaje)
   document.getElementById('checkOrder').addEventListener('click', () => {
     const currentOrder = [...imageContainer.children].map(div =>
@@ -88,43 +157,6 @@ const images = [
   });
   
   // --- ZOOM ---
-  
-  let pressTimer = null;
-  let movedDuringPress = false;
-  
-  function startPressTimer(e) {
-    const target = e.target.closest('.image-item');
-    if (!target) return;
-  
-    movedDuringPress = false;
-  
-    pressTimer = setTimeout(() => {
-      if (!movedDuringPress) {
-        openZoom(target.querySelector('img'));
-      }
-    }, 500);
-  }
-  
-  function cancelPressTimer() {
-    clearTimeout(pressTimer);
-    pressTimer = null;
-    movedDuringPress = false;
-  }
-  
-  function markAsMoved() {
-    movedDuringPress = true;
-  }
-  
-  // Eventos para zoom
-  imageContainer.addEventListener('mousedown', startPressTimer);
-  imageContainer.addEventListener('touchstart', startPressTimer);
-  
-  imageContainer.addEventListener('mouseup', cancelPressTimer);
-  imageContainer.addEventListener('mouseleave', cancelPressTimer);
-  imageContainer.addEventListener('touchend', cancelPressTimer);
-  
-  imageContainer.addEventListener('mousemove', markAsMoved);
-  imageContainer.addEventListener('touchmove', markAsMoved);
   
   function openZoom(imgEl) {
     const src = imgEl.getAttribute('data-full') || imgEl.src;
