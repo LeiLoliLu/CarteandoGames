@@ -1,15 +1,14 @@
 const images = [
-    { id: 1, src: 'https://placehold.co/600x400?text=Foto+1' },
-    { id: 2, src: 'https://placehold.co/400x600?text=Foto+2' },
-    { id: 3, src: 'https://placehold.co/1200x800?text=Foto+3' },
-    { id: 4, src: 'https://placehold.co/800x1200?text=Foto+4' },
-    { id: 5, src: 'https://placehold.co/1000x667?text=Foto+5' },
-    { id: 6, src: 'https://placehold.co/1024x768?text=Foto+6' },
-    { id: 7, src: 'https://placehold.co/1080x1350?text=Foto+7' },
-    { id: 8, src: 'https://placehold.co/1080x1080?text=Foto+8' }
+    { id: 1, src: 'pictures/WhatsApp Image 2025-07-23 at 18.14.11.jpeg' },
+    { id: 2, src: 'pictures/WhatsApp Image 2025-07-23 at 18.14.51.jpeg' },
+    { id: 3, src: 'pictures/WhatsApp Image 2025-07-23 at 18.15.34.jpeg' },
+    { id: 4, src: 'pictures/WhatsApp Image 2025-07-23 at 18.16.32.jpeg' },
+    { id: 5, src: 'pictures/WhatsApp Image 2025-07-23 at 18.17.07.jpeg' },
+    { id: 6, src: 'pictures/WhatsApp Image 2025-07-23 at 18.17.45.jpeg' },
+    { id: 7, src: 'pictures/WhatsApp Image 2025-07-23 at 18.18.13.jpeg' },
+    { id: 8, src: 'pictures/WhatsApp Image 2025-07-23 at 18.18.46.jpeg' }
   ];
   
-  // Mezcla aleatoriamente las imágenes al inicio
   function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
   }
@@ -28,7 +27,12 @@ const images = [
       const imageElement = document.createElement('img');
       imageElement.src = img.src;
       imageElement.alt = `Foto ${img.id}`;
-      imageElement.dataset.full = img.src; // misma imagen para zoom
+      imageElement.dataset.full = img.src; 
+
+      div.addEventListener('dblclick', () => {
+        openZoom(imageElement);
+      });
+
   
       div.appendChild(imageElement);
       imageContainer.appendChild(div);
@@ -37,7 +41,7 @@ const images = [
   
   renderImages();
   
-  // Drag & Drop para mouse
+
   let dragged;
   
   document.addEventListener('dragstart', e => {
@@ -70,7 +74,6 @@ const images = [
     }
   });
   
-  // Drag & Drop para touch (móvil)
   let touchDragged = null;
   let movedDuringPress = false;
   let pressTimer = null;
@@ -139,7 +142,6 @@ const images = [
     pressTimer = null;
   });
   
-  // Botón para comprobar orden (solo muestra mensaje)
   document.getElementById('checkOrder').addEventListener('click', () => {
     const currentOrder = [...imageContainer.children].map(div =>
       parseInt(div.getAttribute('data-id'))
@@ -155,8 +157,9 @@ const images = [
       result.style.color = 'red';
     }
   });
+
   
-  // --- ZOOM ---
+  
   
   function openZoom(imgEl) {
     const src = imgEl.getAttribute('data-full') || imgEl.src;
